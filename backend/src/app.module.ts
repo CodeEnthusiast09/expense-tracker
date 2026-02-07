@@ -1,11 +1,25 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { DatabaseModule } from './database/database.module';
+import { TransactionsModule } from './transactions/transactions.module';
+import { UserModule } from './user/user.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeOrmAsyncConfig } from 'db/data-source';
+import { ConfigModule } from '@nestjs/config';
+import configuration from './config/configuration';
+import { validate } from 'env.validation';
 
 @Module({
-  imports: [DatabaseModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env'],
+      load: [configuration],
+      validate: validate,
+    }),
+    TransactionsModule,
+    UserModule,
+  ],
+  controllers: [],
+  providers: [],
 })
-export class AppModule {}
+export class AppModule { }
