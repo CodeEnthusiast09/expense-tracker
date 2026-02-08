@@ -142,7 +142,7 @@ export class TransactionsService {
       .select('transaction.category', 'category')
       .addSelect('SUM(transaction.amount)', 'total')
       .addSelect('COUNT(transaction.id)', 'count')
-      .where('transaction.user_id = :userId', { userId })
+      .where('transaction.userId = :userId', { userId })
       .groupBy('transaction.category')
       .getRawMany<QueryResult>();
 
