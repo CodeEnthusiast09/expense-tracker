@@ -1,16 +1,27 @@
-import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
+  IsString,
+} from 'class-validator';
 
 export class CreateTransactionDto {
-  @IsString()
-  @IsNotEmpty()
-  title: string;
-
   @IsNumber()
   @IsPositive({ message: 'Amount must be a positive number' })
   @IsNotEmpty()
   amount: number;
 
-  @IsString()
   @IsNotEmpty()
-  category: string;
+  @IsString()
+  description: string;
+
+  @IsNotEmpty()
+  @IsEnum(['income', 'expense'])
+  category: 'income' | 'expense';
+
+  @IsNotEmpty()
+  @IsDateString()
+  transactionDate: string;
 }

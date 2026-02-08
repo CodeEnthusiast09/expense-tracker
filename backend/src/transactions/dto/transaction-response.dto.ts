@@ -6,19 +6,22 @@ export class TransactionResponseDto {
   id: string;
 
   @Expose()
-  title: string;
+  description: string;
+
+  @Expose()
+  category: 'income' | 'expense';
 
   @Expose()
   amount: number;
 
   @Expose()
-  category: string;
+  transactionDate: Date;
 
   @Expose()
-  created_at: Date;
+  createdAt: Date;
 
   @Expose()
-  updated_at: Date;
+  updatedAt: Date;
 
   @Expose()
   @Type(() => UserResponseDto)

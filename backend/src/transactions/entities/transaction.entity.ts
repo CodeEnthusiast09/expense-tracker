@@ -14,25 +14,30 @@ export class Transaction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'user_id' })
-  userId: string;
-
   @Column()
-  title: string;
+  userId: string;
 
   @Column({ type: 'decimal', precision: 15, scale: 2, default: 0 })
   amount: number;
 
-  @Column()
-  category: string;
+  @Column({ type: 'varchar', length: 255 })
+  description: string;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @Column({ type: 'enum', enum: ['income', 'expense'], default: 'expense' })
+  category: 'income' | 'expense';
+
+  @Column({ type: 'date' })
+  transactionDate: Date;
+
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.transactions)
-  @JoinColumn({ name: 'user_id' })
+  @ManyToOne(() => User, (user) => user.transactions, {
+    onDelete: 'CASCADE', // Database-level: delete transactions when user is deleted
+  })
+  @JoinColumn()
   user: User;
 }

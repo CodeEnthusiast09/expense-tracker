@@ -1,0 +1,23 @@
+// 1. Extend base query DTO
+export class MyQueryDto extends PaginationQueryDto {
+  // Add module-specific filters here
+}
+
+// 2. Extend base response DTO
+export class PaginatedMyResponseDto extends PaginatedResponseDto<MyEntityDto> {}
+
+// 3. Inject and use PaginationService
+constructor(
+  @InjectRepository(MyEntity)
+  private repo: Repository<MyEntity>,
+  private paginationService: PaginationService,
+) {}
+
+async findAll(query: MyQueryDto) {
+  return this.paginationService.paginate(this.repo, {
+    page: query.page,
+    limit: query.limit,
+    where: { /* your filters */ },
+    order: { /* your sorting */ },
+  });
+}

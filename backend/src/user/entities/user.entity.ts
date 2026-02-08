@@ -13,10 +13,10 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'first_name' })
+  @Column()
   firstname: string;
 
-  @Column({ name: 'last_name' })
+  @Column()
   lastname: string;
 
   @Column()
@@ -25,12 +25,14 @@ export class User {
   @Column()
   password: string;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Transaction, (transaction) => transaction.user)
+  @OneToMany(() => Transaction, (transaction) => transaction.user, {
+    cascade: true, // TypeORM-level: save transactions when saving user
+  })
   transactions: Transaction[];
 }

@@ -6,4 +6,9 @@ export default () => ({
   database: {
     url: process.env.DATABASE_URL,
   },
+
+  throttle: {
+    ttl: parseInt(process.env.THROTTLE_TTL || '60000', 10),
+    limit: parseInt(process.env.THROTTLE_LIMIT || '100', 10),
+  },
 });
