@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { RequestWithUser } from 'src/types/express-request-with-user';
+import { RequestWithUser } from 'src/interface/express-request-with-user.interface';
 
 export const GetUser = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext) => {

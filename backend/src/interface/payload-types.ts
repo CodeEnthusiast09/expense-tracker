@@ -1,7 +1,7 @@
 export interface PayloadType {
-  sub: string;
+  sub?: string;
   userId: string;
-  email: string;
+  email?: string;
   iat?: number;
   exp?: number;
 }

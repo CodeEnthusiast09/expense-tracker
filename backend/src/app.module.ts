@@ -9,6 +9,7 @@ import { validate } from 'env.validation';
 import { CommonModule } from './common/common.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { DevAuthGuard } from './common/guards/dev-auth.guard';
 
 @Module({
   imports: [
@@ -37,6 +38,10 @@ import { APP_GUARD } from '@nestjs/core';
   ],
   controllers: [],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: DevAuthGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
