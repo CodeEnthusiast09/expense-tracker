@@ -41,6 +41,14 @@ export const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20,
   },
+  buttonPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.98 }],
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+    backgroundColor: COLORS.primary,
+  },
   buttonText: {
     color: COLORS.white,
     fontSize: 18,
@@ -73,6 +81,13 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS.text,
     marginBottom: 20,
+    textAlign: "center",
+  },
+  verificationText: {
+    fontSize: 16,
+    fontWeight: "semibold",
+    color: COLORS.text,
+    marginBottom: 16,
     textAlign: "center",
   },
   verificationInput: {
