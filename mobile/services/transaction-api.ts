@@ -7,10 +7,32 @@ export const useTransactionClientsRequest = () => {
   const api = useApi();
 
   return {
-    getAll: (tableFilter = DEFAULT_FILTERS, year: number) =>
-      api.get(
-        `/incident-log/staff/preliminary-incident-reports?limit=${tableFilter?.limit}&page=${tableFilter?.page}&order=${tableFilter?.order}&search=${tableFilter?.search}&year=${year}`,
-      ),
+    getAll: (
+      tableFilter = DEFAULT_FILTERS,
+      {
+        year,
+        month,
+        category,
+      }: { year?: number; month?: string; category?: string },
+    ) => {
+      let query = `limit=${tableFilter?.limit}&page=${tableFilter?.page}&order=${tableFilter?.order}&search=${tableFilter?.search}`;
+
+      if (year) {
+        query += `&year=${year}`;
+      }
+
+      if (month) {
+        query += `&month=${month}`;
+      }
+
+      if (category) {
+        query += `&category=${category}`;
+      }
+
+      return api.get(
+        `/incident-log/staff/preliminary-incident-reports?${query}`,
+      );
+    },
 
     getOne: (id: string) => api.get(`/habit/${id}`),
 

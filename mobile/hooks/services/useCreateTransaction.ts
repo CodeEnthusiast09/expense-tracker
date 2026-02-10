@@ -10,7 +10,7 @@ type MutationProp = {
   data: InferType<typeof transactionValidationSchema>;
 };
 
-export const useCreateHabit = () => {
+export const useCreateTransactions = () => {
   const queryClient = useQueryClient();
 
   const router = useRouter();
