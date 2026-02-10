@@ -1,12 +1,12 @@
-import { useTheme } from "@/hooks/useTheme";
-import { SafeScreenProps } from "@/interface/safe-screen";
+import { useTheme } from "@/hooks/common";
+import { SafeScreenProps } from "@/interfaces/safe-screen";
 import React, { PropsWithChildren } from "react";
 import { ScrollView, ViewStyle, StyleProp } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const SafeScreen = ({
   children,
-  edges = ["top", "bottom", "left", "right"], // Default: protect all edges
+  edges = ["top", "bottom", "left", "right"],
   style,
   backgroundColor,
   scrollable = false,
@@ -41,15 +41,15 @@ const SafeScreen = ({
 
 export default SafeScreen;
 
-export const SafeScreenWithTabs = (props: Omit<SafeScreenProps, "edges">) => (
-  <SafeScreen edges={["top", "left", "right"]} {...props} />
-);
+export const SafeScreenWithTabs = (
+  props: PropsWithChildren<Omit<SafeScreenProps, "edges">>,
+) => <SafeScreen edges={["top", "left", "right"]} {...props} />;
 
-export const FullScreenSafe = (props: Omit<SafeScreenProps, "edges">) => (
-  <SafeScreen edges={[]} {...props} />
-);
+export const FullScreenSafe = (
+  props: PropsWithChildren<Omit<SafeScreenProps, "edges">>,
+) => <SafeScreen edges={[]} {...props} />;
 
-export const ThemedSafeScreen = (props: SafeScreenProps) => {
+export const ThemedSafeScreen = (props: PropsWithChildren<SafeScreenProps>) => {
   const { colors } = useTheme();
   return <SafeScreen backgroundColor={colors.bg} {...props} />;
 };
