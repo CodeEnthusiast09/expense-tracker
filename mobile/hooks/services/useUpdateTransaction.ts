@@ -7,6 +7,7 @@ import Toast from "react-native-toast-message";
 import { InferType } from "yup";
 
 type MutationProp = {
+  id: string;
   data: InferType<typeof transactionValidationSchema>;
 };
 
@@ -23,8 +24,8 @@ export const useUpdateTransactions = () => {
     MutationProp
   >({
     // @ts-ignore
-    mutationFn: async ({ data }: MutationProp) => {
-      return clientRequest.transaction.update(data);
+    mutationFn: async ({ id, data }: MutationProp) => {
+      return clientRequest.transaction.update(id, data);
     },
     onSuccess: (response: APIResponse) => {
       if (response?.success) {

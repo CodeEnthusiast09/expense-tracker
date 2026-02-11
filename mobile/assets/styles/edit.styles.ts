@@ -1,0 +1,255 @@
+import { StyleSheet } from "react-native";
+import { COLORS } from "@/constants/colors";
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
+    paddingTop: 60,
+    backgroundColor: COLORS.card,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: COLORS.text,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 20,
+    gap: 16,
+  },
+  amountCard: {
+    padding: 24,
+    borderRadius: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  incomeCard: {
+    backgroundColor: COLORS.income,
+  },
+  expenseCard: {
+    backgroundColor: COLORS.expense,
+  },
+  amountCardContent: {
+    flex: 1,
+  },
+  amountLabel: {
+    fontSize: 14,
+    color: COLORS.white,
+    opacity: 0.9,
+    marginBottom: 4,
+  },
+  amountText: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: COLORS.white,
+  },
+  amountEditContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  amountEditSymbol: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: COLORS.white,
+    marginRight: 4,
+  },
+  amountEditInput: {
+    flex: 1,
+    fontSize: 32,
+    fontWeight: "bold",
+    color: COLORS.white,
+    padding: 0,
+  },
+  detailsCard: {
+    backgroundColor: COLORS.card,
+    borderRadius: 16,
+    padding: 20,
+    gap: 20,
+    shadowColor: COLORS.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  detailRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  detailRowColumn: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: 12,
+  },
+  detailLabel: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  detailLabelText: {
+    fontSize: 14,
+    color: COLORS.textLight,
+    fontWeight: "500",
+  },
+  detailValue: {
+    fontSize: 16,
+    color: COLORS.text,
+    fontWeight: "600",
+  },
+  detailValueEdit: {
+    fontSize: 16,
+    color: COLORS.primary,
+    fontWeight: "600",
+    textDecorationLine: "underline",
+  },
+  detailValueDescription: {
+    fontSize: 16,
+    color: COLORS.text,
+    lineHeight: 24,
+  },
+  categoryToggle: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  categoryButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: COLORS.background,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  categoryButtonActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  categoryButtonText: {
+    fontSize: 14,
+    color: COLORS.text,
+    fontWeight: "500",
+  },
+  categoryButtonTextActive: {
+    color: COLORS.white,
+  },
+  descriptionEditContainer: {
+    gap: 12,
+  },
+  descriptionInput: {
+    backgroundColor: COLORS.background,
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 16,
+    color: COLORS.text,
+    minHeight: 80,
+    textAlignVertical: "top",
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  quickSelectLabel: {
+    fontSize: 12,
+    color: COLORS.textLight,
+    fontWeight: "500",
+  },
+  chipsContainer: {
+    gap: 8,
+  },
+  chip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 16,
+    backgroundColor: COLORS.background,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  chipActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  chipText: {
+    fontSize: 12,
+    color: COLORS.text,
+    fontWeight: "500",
+  },
+  chipTextActive: {
+    color: COLORS.white,
+  },
+  cancelButton: {
+    backgroundColor: COLORS.card,
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginTop: 8,
+  },
+  cancelButtonPressed: {
+    opacity: 0.7,
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    color: COLORS.text,
+    fontWeight: "600",
+  },
+  errorFieldText: {
+    color: COLORS.expense,
+    fontSize: 12,
+    marginTop: 4,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingCard: {
+    backgroundColor: COLORS.card,
+    padding: 24,
+    borderRadius: 16,
+    alignItems: "center",
+    gap: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: COLORS.text,
+    fontWeight: "500",
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 16,
+  },
+  errorText: {
+    fontSize: 18,
+    color: COLORS.textLight,
+  },
+});

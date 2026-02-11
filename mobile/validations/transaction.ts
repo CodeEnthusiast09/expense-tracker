@@ -1,6 +1,8 @@
 import * as yup from "yup";
 
 export const transactionValidationSchema = yup.object().shape({
+  // id: yup.string().optional(),
+
   description: yup.string().required("Description is required"),
 
   amount: yup

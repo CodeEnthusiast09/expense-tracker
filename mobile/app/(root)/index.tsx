@@ -25,7 +25,6 @@ import NoTransactionsFound from "@/components/empty-state";
 import Toast from "react-native-toast-message";
 import * as Haptics from "expo-haptics";
 import { SearchBox } from "@/components/search-box";
-// import { Pagination } from "@/components/pagination";
 import { TransactionFilters } from "@/components/transaction-filters";
 import { LoadMoreButton } from "@/components/load-more-button";
 
@@ -38,15 +37,15 @@ export default function Page() {
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // 👇 NEW: State to accumulate transactions across pages
+  // State to accumulate transactions across pages
   const [accumulatedTransactions, setAccumulatedTransactions] = useState<any[]>(
     [],
   );
 
-  // 👇 NEW: Track if we're loading more (different from initial load)
+  // Track if we're loading more (different from initial load)
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  // 👇 NEW: Track previous filter state to detect changes
+  // Track previous filter state to detect changes
   const prevFiltersRef = useRef<string>("");
 
   // Fetch transactions and summary
@@ -101,7 +100,7 @@ export default function Page() {
     setPage,
   ]);
 
-  // 👇 NEW: Accumulate transactions when new data arrives
+  // Accumulate transactions when new data arrives
   useEffect(() => {
     if (transactions && !isLoadingTransactions) {
       setAccumulatedTransactions((prev) => {
@@ -198,7 +197,7 @@ export default function Page() {
     options.setMonth("");
   };
 
-  // 👇 NEW: Handle load more button click
+  // Handle load more button click
   const handleLoadMore = () => {
     if (!pagination) return;
 
@@ -292,13 +291,6 @@ export default function Page() {
         // Header is ALWAYS shown (with BalanceCard skeleton)
         ListHeaderComponent={renderHeader}
         // Show different data based on loading state
-
-        // data={
-        //   isLoadingTransactions && !refreshing
-        //     ? Array(5).fill({}) // Dummy array for skeletons
-        //     : transactions || []
-        // }
-
         data={displayData}
         // Render skeleton OR real transaction
         renderItem={({ item, index }) => {
@@ -327,11 +319,6 @@ export default function Page() {
           // Only show empty state if NOT loading
           !isLoadingTransactions ? <NoTransactionsFound /> : null
         }
-        // ListFooterComponent={
-        //   pagination && !isLoadingTransactions ? (
-        //     <Pagination pagination={pagination} onPaginate={setPage} />
-        //   ) : null
-        // }
         ListFooterComponent={
           pagination && typeof pagination.total === "number" ? (
             <LoadMoreButton

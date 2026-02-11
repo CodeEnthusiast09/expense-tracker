@@ -32,14 +32,17 @@ export const useTransactionClientsRequest = () => {
       return api.get(`/transactions?${query}`);
     },
 
-    getOne: (id: string) => api.get(`/habit/${id}`),
+    getOne: (id: string) => api.get(`/transactions/${id}`),
 
     create: (payload: InferType<typeof transactionValidationSchema>) =>
       api.post({ url: `/transactions`, payload }),
 
-    update: (payload: InferType<typeof transactionValidationSchema>) =>
+    update: (
+      id: string,
+      payload: InferType<typeof transactionValidationSchema>,
+    ) =>
       api.patch({
-        url: `/transactions`,
+        url: `/transactions/${id}`,
         payload,
       }),
 
