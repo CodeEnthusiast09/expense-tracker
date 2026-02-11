@@ -15,33 +15,66 @@ import {
   useTransactions,
   useTransactionsSummary,
 } from "@/hooks/services";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { styles } from "@/assets/styles/home.styles";
 import { Ionicons } from "@expo/vector-icons";
 import { BalanceCard } from "@/components/balance-card";
 import { TransactionItem } from "@/components/transaction-item";
 import { SkeletonWrapper } from "@/components/skeleton-wrapper";
 import NoTransactionsFound from "@/components/empty-state";
+import Toast from "react-native-toast-message";
+import * as Haptics from "expo-haptics";
 
 export default function Page() {
   const { user } = useUser();
+
   const router = useRouter();
+
   const [refreshing, setRefreshing] = useState(false);
+
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Fetch transactions and summary
   const {
     data: transactions,
     isPending: isLoadingTransactions,
+    isError: isTransactionsError,
+    error: transactionsError,
     refetch: refetchTransactions,
   } = useTransactions();
 
   const {
     data: summary,
     isPending: isLoadingSummary,
+    isError: isSummaryError,
+    error: summaryError,
     refetch: refetchSummary,
   } = useTransactionsSummary();
 
-  const { mutate: deleteTransaction } = useDeleteTransaction();
+  const { mutate: deleteTransaction, isPending: isDeleting } =
+    useDeleteTransaction(() => {
+      setDeletingId(null);
+    });
+
+  useEffect(() => {
+    if (isTransactionsError) {
+      Toast.show({
+        type: "error",
+        text1: "Failed to load transactions",
+        text2: "Please pull to refresh",
+      });
+    }
+  }, [isTransactionsError]);
+
+  useEffect(() => {
+    if (isSummaryError) {
+      Toast.show({
+        type: "error",
+        text1: "Failed to load summary",
+        text2: "Please pull to refresh",
+      });
+    }
+  }, [isSummaryError]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -58,7 +91,23 @@ export default function Page() {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => deleteTransaction({ transactionId: id }), // ✅ Call with object
+          onPress: () => {
+            // 📳 Haptic feedback for delete confirmation
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+            // 🎯 Set the transaction as being deleted
+            setDeletingId(id);
+
+            // 🗑️ Perform the deletion
+            deleteTransaction(
+              { transactionId: id },
+              {
+                onSettled: () => {
+                  setDeletingId(null);
+                },
+              },
+            );
+          },
         },
       ],
     );
@@ -109,8 +158,8 @@ export default function Page() {
 
       {/* Transactions List with Skeleton */}
       {isLoadingTransactions && !refreshing ? (
-        <View style={styles.transactionsListContent}>
-          <SkeletonWrapper isLoading count={5} height={80} />
+        <View style={[styles.transactionsList, styles.transactionsListContent]}>
+          <SkeletonWrapper isLoading count={5} height={80} borderRadius={12} />
         </View>
       ) : (
         <FlatList
@@ -118,7 +167,11 @@ export default function Page() {
           contentContainerStyle={styles.transactionsListContent}
           data={transactions || []}
           renderItem={({ item }) => (
-            <TransactionItem item={item} onDelete={handleDelete} />
+            <TransactionItem
+              item={item}
+              onDelete={handleDelete}
+              isDeleting={deletingId === item.id}
+            />
           )}
           ListEmptyComponent={<NoTransactionsFound />}
           showsVerticalScrollIndicator={false}

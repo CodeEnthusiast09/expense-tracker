@@ -5,6 +5,8 @@ import { Stack } from "expo-router/stack";
 import { ActivityIndicator, View } from "react-native";
 import { COLORS } from "@/constants/colors";
 import { ProviderWrappers } from "@/components/provider-wrappers";
+import Toast from "react-native-toast-message";
+import ToastConfig from "@/lib/toast-config";
 
 export default function Layout() {
   const { isSignedIn, isLoaded } = useUser();
@@ -28,6 +30,7 @@ export default function Layout() {
     <ProviderWrappers>
       <SafeScreenWithTabs backgroundColor={COLORS.background}>
         <Stack screenOptions={{ headerShown: false }} />
+        <Toast config={ToastConfig} />
       </SafeScreenWithTabs>
     </ProviderWrappers>
   );

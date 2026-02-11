@@ -17,7 +17,6 @@ export const SkeletonWrapper = ({
   isLoading = false,
   style = {
     marginVertical: 16,
-    borderRadius: 5,
     width: "100%",
   },
   height = 50,

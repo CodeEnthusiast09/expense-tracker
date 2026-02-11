@@ -18,6 +18,18 @@ async function bootstrap() {
     }),
   );
 
+  app.enableCors({
+    origin: [
+      'http://localhost:8081',
+      'http://localhost:19006',
+      'http://192.168.x.x:8081',
+      'exp://192.168.x.x:8081',
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-user-id'],
+  });
+
   app.setGlobalPrefix('api');
 
   const port = process.env.PORT || 3000;

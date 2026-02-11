@@ -108,7 +108,7 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   balanceStatItem: {
-    flex: 1,
+    // flex: 1,
     alignItems: "center",
   },
   statDivider: {
@@ -189,6 +189,11 @@ export const styles = StyleSheet.create({
     padding: 15,
     borderLeftWidth: 1,
     borderLeftColor: COLORS.border,
+    alignSelf: "stretch",
+    justifyContent: "center",
+    borderTopRightRadius: 12,
+    borderBottomRightRadius: 12,
+    overflow: "hidden",
   },
   transactionsContainer: {
     marginBottom: 20,

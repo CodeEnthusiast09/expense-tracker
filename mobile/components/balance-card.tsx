@@ -15,24 +15,29 @@ interface BalanceCardProps {
 
 export const BalanceCard = ({ summary, isLoading }: BalanceCardProps) => {
   return (
-    <SkeletonWrapper isLoading={isLoading} height={150}>
+    <SkeletonWrapper isLoading={isLoading} height={150} borderRadius={20}>
       <View style={styles.balanceCard}>
         <Text style={styles.balanceTitle}>Total Balance</Text>
+
         <Text style={styles.balanceAmount}>
           ₦{addCommaToNumber(summary?.balance?.toFixed(2), true) ?? "0.00"}
         </Text>
         <View style={styles.balanceStats}>
-          <View style={styles.balanceStatItem}>
+          <View style={[styles.balanceStatItem, { alignItems: "flex-start" }]}>
             <Text style={styles.balanceStatLabel}>Income</Text>
+
             <Text style={[styles.balanceStatAmount, { color: COLORS.income }]}>
               +₦
               {addCommaToNumber(summary?.totalIncome?.toFixed(2), true) ??
                 "0.00"}
             </Text>
           </View>
-          <View style={[styles.balanceStatItem, styles.statDivider]} />
-          <View style={styles.balanceStatItem}>
+
+          <View style={styles.statDivider} />
+
+          <View style={[styles.balanceStatItem, { alignItems: "flex-end" }]}>
             <Text style={styles.balanceStatLabel}>Expenses</Text>
+
             <Text style={[styles.balanceStatAmount, { color: COLORS.expense }]}>
               -₦
               {addCommaToNumber(summary?.totalExpense?.toFixed(2), true) ??
