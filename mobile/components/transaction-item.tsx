@@ -134,6 +134,7 @@ export const TransactionItem = ({
         </View>
         <View style={styles.transactionLeft}>
           <Text style={styles.transactionTitle}>{item.description}</Text>
+
           <Text style={styles.transactionCategory}>
             {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
           </Text>
@@ -148,6 +149,7 @@ export const TransactionItem = ({
             {isIncome ? "+" : "-"}₦
             {addCommaToNumber(item.amount.toFixed(2), true)}
           </Text>
+
           <Text style={styles.transactionDate}>
             {formatDate(item.transactionDate)}
           </Text>

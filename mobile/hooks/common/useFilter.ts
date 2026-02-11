@@ -14,12 +14,19 @@ export const useFilter = () => {
     }));
   };
 
-  const handleSearch = (keyword: string) => {
+  const handleSearch = (keyword: string | number) => {
     setFilter((prev) => ({
       ...prev,
-      search: keyword.trim(),
+      search: String(keyword).trim(),
     }));
   };
 
-  return { filter, setPage, handleSearch };
+  const setOrder = (order: "desc" | "asc") => {
+    setFilter((prev) => ({
+      ...prev,
+      order,
+    }));
+  };
+
+  return { filter, setPage, setOrder, handleSearch };
 };

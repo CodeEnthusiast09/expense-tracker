@@ -1,6 +1,6 @@
 export interface DataFilter {
   limit?: number;
   page?: number;
-  order?: string;
+  order?: "desc" | "asc";
   search?: string;
 }

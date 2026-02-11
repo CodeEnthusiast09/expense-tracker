@@ -7,7 +7,7 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from './entities/transaction.entity';
-import { Between, FindOptionsWhere, Like, Repository } from 'typeorm';
+import { Between, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
 import { TransactionResponseDto } from './dto/transaction-response.dto';
 import { TransactionSummaryDto } from './dto/transaction-summary.dto';
@@ -62,8 +62,8 @@ export class TransactionsService {
       where.category = category;
     }
 
-    if (search) {
-      where.description = Like(`%${search}%`);
+    if (search?.trim()) {
+      where.description = ILike(`%${search.trim()}%`);
     }
 
     // Filter by year and/or month
@@ -91,16 +91,21 @@ export class TransactionsService {
       limit,
       where,
       order: { updatedAt: orderDirection },
+      baseUrl: '/transactions',
     });
 
     // Transform to DTOs
-    const data = plainToInstance(TransactionResponseDto, result.data, {
-      excludeExtraneousValues: true,
-    });
+    const transformedData = plainToInstance(
+      TransactionResponseDto,
+      result.data,
+      {
+        excludeExtraneousValues: true,
+      },
+    );
 
     return {
-      data,
-      meta: result.meta,
+      ...result,
+      data: transformedData,
     };
   }
 

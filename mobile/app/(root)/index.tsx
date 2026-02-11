@@ -15,7 +15,7 @@ import {
   useTransactions,
   useTransactionsSummary,
 } from "@/hooks/services";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { styles } from "@/assets/styles/home.styles";
 import { Ionicons } from "@expo/vector-icons";
 import { BalanceCard } from "@/components/balance-card";
@@ -24,6 +24,10 @@ import { SkeletonWrapper } from "@/components/skeleton-wrapper";
 import NoTransactionsFound from "@/components/empty-state";
 import Toast from "react-native-toast-message";
 import * as Haptics from "expo-haptics";
+import { SearchBox } from "@/components/search-box";
+// import { Pagination } from "@/components/pagination";
+import { TransactionFilters } from "@/components/transaction-filters";
+import { LoadMoreButton } from "@/components/load-more-button";
 
 export default function Page() {
   const { user } = useUser();
@@ -34,27 +38,89 @@ export default function Page() {
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  // 👇 NEW: State to accumulate transactions across pages
+  const [accumulatedTransactions, setAccumulatedTransactions] = useState<any[]>(
+    [],
+  );
+
+  // 👇 NEW: Track if we're loading more (different from initial load)
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  // 👇 NEW: Track previous filter state to detect changes
+  const prevFiltersRef = useRef<string>("");
+
   // Fetch transactions and summary
   const {
     data: transactions,
+    pagination,
     isPending: isLoadingTransactions,
     isError: isTransactionsError,
-    error: transactionsError,
+    // error: transactionsError,
     refetch: refetchTransactions,
+    options,
+    setPage,
+    setOrder,
+    filter,
+    handleSearch,
   } = useTransactions();
 
   const {
     data: summary,
     isPending: isLoadingSummary,
     isError: isSummaryError,
-    error: summaryError,
+    // error: summaryError,
     refetch: refetchSummary,
   } = useTransactionsSummary();
 
-  const { mutate: deleteTransaction, isPending: isDeleting } =
-    useDeleteTransaction(() => {
-      setDeletingId(null);
+  const { mutate: deleteTransaction } = useDeleteTransaction(() => {
+    setDeletingId(null);
+  });
+
+  useEffect(() => {
+    const currentFilters = JSON.stringify({
+      search: filter.search,
+      category: options.category,
+      year: options.year,
+      month: options.month,
+      order: filter.order,
     });
+
+    // If filters changed, reset to page 1 and clear accumulated data
+    if (prevFiltersRef.current && prevFiltersRef.current !== currentFilters) {
+      setPage(1);
+      setAccumulatedTransactions([]);
+    }
+
+    prevFiltersRef.current = currentFilters;
+  }, [
+    filter.search,
+    options.category,
+    options.year,
+    options.month,
+    filter.order,
+    setPage,
+  ]);
+
+  // 👇 NEW: Accumulate transactions when new data arrives
+  useEffect(() => {
+    if (transactions && !isLoadingTransactions) {
+      setAccumulatedTransactions((prev) => {
+        // If on page 1, replace all data
+        if (pagination?.currentPage === 1) {
+          return transactions;
+        }
+
+        // Otherwise, append new transactions (avoid duplicates)
+        const existingIds = new Set(prev.map((t) => t.id));
+        const newTransactions = transactions.filter(
+          (t) => !existingIds.has(t.id),
+        );
+        return [...prev, ...newTransactions];
+      });
+
+      setIsLoadingMore(false);
+    }
+  }, [transactions, isLoadingTransactions, pagination?.currentPage]);
 
   useEffect(() => {
     if (isTransactionsError) {
@@ -113,73 +179,174 @@ export default function Page() {
     );
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        {/* HEADER */}
-        <View style={styles.header}>
-          {/* LEFT */}
-          <View style={styles.headerLeft}>
-            <Image
-              source={require("@/assets/images/logo.png")}
-              style={styles.headerLogo}
-              resizeMode="contain"
-            />
-            <View style={styles.welcomeContainer}>
-              <Text style={styles.welcomeText}>Welcome,</Text>
-              <Text style={styles.usernameText}>
-                {user?.emailAddresses[0]?.emailAddress.split("@")[0] || "User"}
-              </Text>
-            </View>
-          </View>
-          {/* RIGHT */}
-          <View style={styles.headerRight}>
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => router.push("/create")}
-            >
-              <Ionicons name="add" size={20} color="#FFF" />
-              <Text style={styles.addButtonText}>Add</Text>
-            </TouchableOpacity>
-            <SignOutButton />
+  const handleFilterChange = (newFilters: {
+    category?: string;
+    year?: number | "";
+    month?: string;
+    order?: "asc" | "desc";
+  }) => {
+    if (newFilters.category !== undefined)
+      options.setCategory(newFilters.category);
+    if (newFilters.year !== undefined) options.setYear(newFilters.year);
+    if (newFilters.month !== undefined) options.setMonth(newFilters.month);
+    if (newFilters.order !== undefined) setOrder(newFilters.order); // ← Use setOrder from filter
+  };
+
+  const handleClearFilters = () => {
+    options.setCategory("");
+    options.setYear("");
+    options.setMonth("");
+  };
+
+  // 👇 NEW: Handle load more button click
+  const handleLoadMore = () => {
+    if (!pagination) return;
+
+    const { currentPage, hasMorePages } = pagination;
+
+    if (!hasMorePages || isLoadingMore || isLoadingTransactions) return;
+
+    if (typeof currentPage !== "number") return;
+
+    setIsLoadingMore(true);
+
+    setPage(currentPage + 1);
+  };
+
+  const renderHeader = () => (
+    <View>
+      {/* HEADER */}
+      <View style={styles.header}>
+        {/* LEFT */}
+        <View style={styles.headerLeft}>
+          <Image
+            source={require("@/assets/images/logo.png")}
+            style={styles.headerLogo}
+            resizeMode="contain"
+          />
+          <View style={styles.welcomeContainer}>
+            <Text style={styles.welcomeText}>Welcome,</Text>
+            <Text style={styles.usernameText}>
+              {user?.emailAddresses[0]?.emailAddress.split("@")[0] || "User"}
+            </Text>
           </View>
         </View>
-
-        {/* Balance Card with Skeleton */}
-        <BalanceCard
-          summary={summary ?? { totalIncome: 0, totalExpense: 0, balance: 0 }}
-          isLoading={isLoadingSummary}
-        />
-
-        <View style={styles.transactionsHeaderContainer}>
-          <Text style={styles.sectionTitle}>Recent Transactions</Text>
+        {/* RIGHT */}
+        <View style={styles.headerRight}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => router.push("/create")}
+          >
+            <Ionicons name="add" size={20} color="#FFF" />
+            <Text style={styles.addButtonText}>Add</Text>
+          </TouchableOpacity>
+          <SignOutButton />
         </View>
       </View>
 
-      {/* Transactions List with Skeleton */}
-      {isLoadingTransactions && !refreshing ? (
-        <View style={[styles.transactionsList, styles.transactionsListContent]}>
-          <SkeletonWrapper isLoading count={5} height={80} borderRadius={12} />
-        </View>
-      ) : (
-        <FlatList
-          style={styles.transactionsList}
-          contentContainerStyle={styles.transactionsListContent}
-          data={transactions || []}
-          renderItem={({ item }) => (
+      {/* Balance Card with Skeleton */}
+      <BalanceCard
+        summary={summary ?? { totalIncome: 0, totalExpense: 0, balance: 0 }}
+        isLoading={isLoadingSummary}
+      />
+
+      {/* Search Box */}
+      <View style={styles.searchContainer}>
+        <SearchBox
+          value={filter.search ?? ""}
+          placeholder="Search by category..."
+          onChange={handleSearch}
+          debounce={500}
+        />
+      </View>
+
+      {/* Filters */}
+      <TransactionFilters
+        filters={{
+          category: options.category,
+          year: options.year,
+          month: options.month,
+          order: filter.order as "asc" | "desc",
+        }}
+        onFilterChange={handleFilterChange}
+        onClearAll={handleClearFilters}
+      />
+
+      <View style={styles.transactionsHeaderContainer}>
+        <Text style={styles.sectionTitle}>Recent Transactions</Text>
+      </View>
+    </View>
+  );
+
+  const displayData =
+    isLoadingTransactions && !refreshing && accumulatedTransactions.length === 0
+      ? Array(5).fill({}) // Show skeletons on initial load only
+      : accumulatedTransactions;
+
+  return (
+    <View style={styles.container}>
+      {/* Always show FlatList, but change what's IN the list */}
+      <FlatList
+        style={styles.transactionsList}
+        contentContainerStyle={styles.transactionsListContent}
+        // Header is ALWAYS shown (with BalanceCard skeleton)
+        ListHeaderComponent={renderHeader}
+        // Show different data based on loading state
+
+        // data={
+        //   isLoadingTransactions && !refreshing
+        //     ? Array(5).fill({}) // Dummy array for skeletons
+        //     : transactions || []
+        // }
+
+        data={displayData}
+        // Render skeleton OR real transaction
+        renderItem={({ item, index }) => {
+          // If loading, show skeleton
+          if (isLoadingTransactions && !refreshing) {
+            return (
+              <SkeletonWrapper
+                key={`skeleton-${index}`}
+                isLoading
+                height={80}
+                borderRadius={12}
+              />
+            );
+          }
+
+          // Otherwise show real transaction
+          return (
             <TransactionItem
               item={item}
               onDelete={handleDelete}
               isDeleting={deletingId === item.id}
             />
-          )}
-          ListEmptyComponent={<NoTransactionsFound />}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        />
-      )}
+          );
+        }}
+        ListEmptyComponent={
+          // Only show empty state if NOT loading
+          !isLoadingTransactions ? <NoTransactionsFound /> : null
+        }
+        // ListFooterComponent={
+        //   pagination && !isLoadingTransactions ? (
+        //     <Pagination pagination={pagination} onPaginate={setPage} />
+        //   ) : null
+        // }
+        ListFooterComponent={
+          pagination && typeof pagination.total === "number" ? (
+            <LoadMoreButton
+              totalItems={pagination.total}
+              loadedItems={accumulatedTransactions.length}
+              isLoading={isLoadingMore}
+              onLoadMore={handleLoadMore}
+            />
+          ) : null
+        }
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      />
     </View>
   );
 }

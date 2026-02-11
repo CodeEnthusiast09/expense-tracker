@@ -7,7 +7,7 @@ import { useState } from "react";
 export const useTransactions = () => {
   const clientRequest = useClientRequest();
 
-  const { setPage, filter, handleSearch } = useFilter();
+  const { setPage, filter, handleSearch, setOrder } = useFilter();
 
   const [year, setYear] = useState<number | "">("");
 
@@ -53,6 +53,8 @@ export const useTransactions = () => {
     refetch,
     options,
     setPage,
+    setOrder,
+    filter,
     handleSearch,
   };
 };

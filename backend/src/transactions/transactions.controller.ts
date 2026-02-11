@@ -15,7 +15,10 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { PayloadType } from 'src/interface/payload-types';
-import { successResponse } from 'src/common/utils/response-helper';
+import {
+  paginatedSuccessResponse,
+  successResponse,
+} from 'src/common/utils/response-helper';
 import { GetTransactionsQueryDto } from './dto/transaction-query.dto';
 
 @Controller('transactions')
@@ -39,12 +42,16 @@ export class TransactionsController {
     @GetUser() user: PayloadType,
     @Query() query: GetTransactionsQueryDto,
   ) {
-    const response = await this.transactionsService.findAllByUser(
+    const paginatedData = await this.transactionsService.findAllByUser(
       user.userId,
       query,
     );
 
-    return successResponse('Transactions retrieved successfully', response);
+    // Use the paginated response helper
+    return paginatedSuccessResponse(
+      'Transactions retrieved successfully',
+      paginatedData,
+    );
   }
 
   @Get('summary')
