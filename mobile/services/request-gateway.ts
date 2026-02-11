@@ -14,7 +14,10 @@ import Toast from "react-native-toast-message";
  * @param baseURL - Base URL for API requests
  */
 const service = (
-  getToken: () => Promise<string | null>,
+  getAuthData: () => Promise<{
+    token: string | null;
+    userId: string | null | undefined;
+  }>,
   signOut: () => Promise<void>,
   baseURL = process.env.EXPO_PUBLIC_API_BASE_URL!,
 ) => {
@@ -32,10 +35,14 @@ const service = (
   service.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {
       // Get token from Clerk instead of AsyncStorage
-      const token = await getToken();
+      const { token, userId } = await getAuthData();
 
       if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      if (userId) {
+        config.headers["x-user-id"] = userId;
       }
 
       return config;
@@ -56,6 +63,7 @@ const service = (
 
       return responseData;
     },
+
     async (error: AxiosError) => {
       if (error?.response === undefined) {
         Toast.show({
@@ -206,10 +214,13 @@ const service = (
 };
 
 export const clientRequestGateway = (
-  getToken: () => Promise<string | null>,
+  getAuthData: () => Promise<{
+    token: string | null;
+    userId: string | null | undefined;
+  }>,
   signOut: () => Promise<void>,
   options?: { baseURL?: string },
 ) => {
   const baseURL = options?.baseURL ?? process.env.EXPO_PUBLIC_API_BASE_URL!;
-  return service(getToken, signOut, baseURL);
+  return service(getAuthData, signOut, baseURL);
 };

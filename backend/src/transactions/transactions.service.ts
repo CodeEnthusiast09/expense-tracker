@@ -7,7 +7,7 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from './entities/transaction.entity';
-import { FindOptionsWhere, Like, Repository } from 'typeorm';
+import { Between, FindOptionsWhere, Like, Repository } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
 import { TransactionResponseDto } from './dto/transaction-response.dto';
 import { TransactionSummaryDto } from './dto/transaction-summary.dto';
@@ -45,11 +45,12 @@ export class TransactionsService {
   ): Promise<PaginatedTransactionsResponseDto> {
     const {
       page = 1,
-      limit = 10,
+      limit = 30,
       category,
       search,
-      sortBy = 'updatedAt',
-      sortOrder = 'DESC',
+      year,
+      month,
+      order = 'desc',
     } = query;
 
     // Build where clause
@@ -65,12 +66,31 @@ export class TransactionsService {
       where.description = Like(`%${search}%`);
     }
 
-    // Use the reusable pagination service!
+    // Filter by year and/or month
+    if (year || month) {
+      const startDate = new Date(
+        year || new Date().getFullYear(),
+        month ? month - 1 : 0,
+        1,
+      );
+      const endDate = new Date(
+        year || new Date().getFullYear(),
+        month ? month : 12,
+        0,
+      );
+
+      where.transactionDate = Between(startDate, endDate);
+    }
+
+    // Convert order string to uppercase for TypeORM
+    const orderDirection = order.toUpperCase() as 'ASC' | 'DESC';
+
+    // Use pagination service
     const result = await this.paginationService.paginate(this.transactionRepo, {
       page,
       limit,
       where,
-      order: { [sortBy]: sortOrder },
+      order: { updatedAt: orderDirection },
     });
 
     // Transform to DTOs

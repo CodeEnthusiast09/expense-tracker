@@ -21,7 +21,6 @@ export const formatDate = (date: string | undefined) => {
     date?.split("-")[0]?.length === 4 ? new Date(date) : parseInputDate(date);
 
   return inputDate.toLocaleDateString("en-us", {
-    weekday: "long",
     year: "numeric",
     month: "short",
     day: "numeric",

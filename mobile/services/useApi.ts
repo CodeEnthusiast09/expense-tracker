@@ -3,16 +3,17 @@ import { useMemo } from "react";
 import { clientRequestGateway } from "./request-gateway";
 
 export function useApi() {
-  const { getToken, signOut } = useAuth();
+  const { getToken, signOut, userId } = useAuth();
 
   const api = useMemo(() => {
-    // Create a wrapper function that calls getToken with the template
-    const getTokenWithTemplate = () =>
-      getToken({ template: "your-template-name" });
+    // Wrapper function that returns both token and userId
+    const getAuthData = async () => {
+      const token = await getToken();
+      return { token, userId };
+    };
 
-    // Pass the function to clientRequestGateway
-    return clientRequestGateway(getTokenWithTemplate, signOut);
-  }, [getToken, signOut]); // Only depend on getToken
+    return clientRequestGateway(getAuthData, signOut);
+  }, [getToken, signOut, userId]);
 
   return api;
 }

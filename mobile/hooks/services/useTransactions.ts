@@ -29,6 +29,7 @@ export const useTransactions = () => {
     isPending,
     error,
     isError,
+    refetch,
   } = useQuery<{
     data: Transaction[];
     pagination: Pagination;
@@ -49,6 +50,8 @@ export const useTransactions = () => {
     isPending,
     error,
     isError,
+    refetch,
+    options,
     setPage,
     handleSearch,
   };

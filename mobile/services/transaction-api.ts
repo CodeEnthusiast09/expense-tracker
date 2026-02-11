@@ -29,25 +29,25 @@ export const useTransactionClientsRequest = () => {
         query += `&category=${category}`;
       }
 
-      return api.get(
-        `/incident-log/staff/preliminary-incident-reports?${query}`,
-      );
+      return api.get(`/transactions?${query}`);
     },
 
     getOne: (id: string) => api.get(`/habit/${id}`),
 
     create: (payload: InferType<typeof transactionValidationSchema>) =>
-      api.post({ url: `/hse/hazard-matrices`, payload }),
+      api.post({ url: `/transactions`, payload }),
 
     update: (payload: InferType<typeof transactionValidationSchema>) =>
       api.patch({
-        url: `/hse/hazard-matrices`,
+        url: `/transactions`,
         payload,
       }),
 
     delete: (id: string) =>
       api.delete({
-        url: `/hse/hazard-matrices/${id}`,
+        url: `/transactions/${id}`,
       }),
+
+    getSummary: () => api.get(`/transactions/summary`),
   };
 };

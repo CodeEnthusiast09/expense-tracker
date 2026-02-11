@@ -4,13 +4,13 @@ import {
   CreateDateColumn,
   Entity,
   OneToMany,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn({ type: 'varchar' })
   id: string;
 
   @Column()
@@ -19,11 +19,8 @@ export class User {
   @Column()
   lastname: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
-
-  @Column()
-  password: string;
 
   @CreateDateColumn()
   createdAt: Date;

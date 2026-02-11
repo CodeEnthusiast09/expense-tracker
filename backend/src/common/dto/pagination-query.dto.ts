@@ -1,9 +1,9 @@
-import { Type } from 'class-transformer';
-import { IsOptional, IsInt, Min, Max, IsEnum } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsString, IsOptional, IsInt, Min, Max, IsEnum } from 'class-validator';
 
 export enum SortOrder {
-  ASC = 'ASC',
-  DESC = 'DESC',
+  ASC = 'asc',
+  DESC = 'desc',
 }
 
 export class PaginationQueryDto {
@@ -18,9 +18,16 @@ export class PaginationQueryDto {
   @IsInt()
   @Min(1)
   @Max(100)
-  limit?: number = 10;
+  limit?: number = 30;
 
   @IsOptional()
   @IsEnum(SortOrder)
-  sortOrder?: SortOrder = SortOrder.DESC;
+  order?: SortOrder = SortOrder.DESC;
+
+  @IsOptional()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' && value !== '' ? value : undefined,
+  )
+  @IsString()
+  search?: string = '';
 }

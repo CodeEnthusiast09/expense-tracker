@@ -1,4 +1,5 @@
-import { IsOptional, IsEnum, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsOptional, IsEnum, IsString, IsInt, Min, Max } from 'class-validator';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
 export enum TransactionType {
@@ -19,11 +20,19 @@ export class GetTransactionsQueryDto extends PaginationQueryDto {
   @IsEnum(TransactionType)
   category?: TransactionType;
 
+  // Filter by year
   @IsOptional()
-  @IsString()
-  search?: string;
+  @Type(() => Number)
+  @IsInt()
+  @Min(2000)
+  @Max(2100)
+  year?: number;
 
+  // Filter by month (1-12)
   @IsOptional()
-  @IsEnum(TransactionSortBy)
-  sortBy?: TransactionSortBy = TransactionSortBy.UPDATED;
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(12)
+  month?: number;
 }

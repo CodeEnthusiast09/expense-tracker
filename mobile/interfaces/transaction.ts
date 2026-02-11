@@ -6,3 +6,9 @@ export interface Transaction extends Base {
   category: string;
   transactionDate: string;
 }
+
+export interface TransactionsSummary {
+  totalIncome: number;
+  totalExpense: number;
+  balance: number;
+}

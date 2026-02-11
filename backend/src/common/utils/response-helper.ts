@@ -1,3 +1,5 @@
+import { PaginationMeta } from '../dto/paginated-response.dto';
+
 export interface ApiResponse<T = any> {
   success: boolean;
   message: string | string[];

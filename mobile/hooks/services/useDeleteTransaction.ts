@@ -8,7 +8,7 @@ type MutationProp = {
   transactionId: string;
 };
 
-export const useDeleteCorrectiveActionPlan = (onSuccess?: Function) => {
+export const useDeleteTransaction = (onSuccess?: Function) => {
   const clientRequest = useClientRequest();
 
   const queryClient = useQueryClient();
@@ -26,6 +26,10 @@ export const useDeleteCorrectiveActionPlan = (onSuccess?: Function) => {
       if (response?.success) {
         queryClient.invalidateQueries({
           queryKey: ["transactions"],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ["transactions-summary"],
         });
 
         Toast.show({
