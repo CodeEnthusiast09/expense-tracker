@@ -10,6 +10,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { COLORS } from "@/constants/colors";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -30,11 +31,17 @@ export default function Page() {
 
   const [error, setError] = useState("");
 
+  const [isSigningUp, setIsSigningUp] = useState(false);
+
+  const [isVerifying, setIsVerifying] = useState(false);
+
   // Handle submission of sign-up form
   const onSignUpPress = async () => {
     if (!isLoaded) return;
 
     setError("");
+
+    setIsSigningUp(true);
 
     // Start sign-up process using email and password provided
     try {
@@ -56,6 +63,9 @@ export default function Page() {
 
       // Show user-friendly error message
       setError(getErrorMessage(err));
+    } finally {
+      // Turn OFF the loading state
+      setIsSigningUp(false);
     }
   };
 
@@ -100,6 +110,9 @@ export default function Page() {
 
       // Show user-friendly error message
       setError(getErrorMessage(err));
+    } finally {
+      // Turn OFF the loading state
+      setIsVerifying(false);
     }
   };
 
@@ -129,18 +142,23 @@ export default function Page() {
           placeholderTextColor="#9a8478"
           onChangeText={(code) => setCode(code)}
           keyboardType="numeric"
+          editable={!isVerifying}
         />
 
         <Pressable
           style={({ pressed }) => [
             styles.button,
-            !code && styles.buttonDisabled,
-            pressed && code && styles.buttonPressed,
+            (!code || isVerifying) && styles.buttonDisabled,
+            pressed && code && !isVerifying && styles.buttonPressed,
           ]}
           onPress={onVerifyPress}
-          disabled={!code}
+          disabled={!code || isVerifying}
         >
-          <Text style={styles.buttonText}>Verify</Text>
+          {isVerifying ? (
+            <ActivityIndicator color={COLORS.white} size="small" />
+          ) : (
+            <Text style={styles.buttonText}>Verify</Text>
+          )}
         </Pressable>
       </View>
     );
@@ -179,6 +197,7 @@ export default function Page() {
           placeholderTextColor="#9a8478"
           onChangeText={(email) => setEmailAddress(email)}
           keyboardType="email-address"
+          editable={!isSigningUp}
         />
 
         <TextInput
@@ -188,18 +207,28 @@ export default function Page() {
           placeholderTextColor="#9a8478"
           secureTextEntry={true}
           onChangeText={(password) => setPassword(password)}
+          editable={!isSigningUp}
         />
 
         <Pressable
           style={({ pressed }) => [
             styles.button,
-            (!emailAddress || !password) && styles.buttonDisabled,
-            pressed && emailAddress && password && styles.buttonPressed,
+            (!emailAddress || !password || isSigningUp) &&
+            styles.buttonDisabled,
+            pressed &&
+            emailAddress &&
+            password &&
+            !isSigningUp &&
+            styles.buttonPressed,
           ]}
           onPress={onSignUpPress}
-          disabled={!emailAddress || !password}
+          disabled={!emailAddress || !password || isSigningUp}
         >
-          <Text style={styles.buttonText}>Sign Up</Text>
+          {isSigningUp ? (
+            <ActivityIndicator color={COLORS.white} size="small" />
+          ) : (
+            <Text style={styles.buttonText}>Sign Up</Text>
+          )}
         </Pressable>
 
         <View style={styles.footerContainer}>

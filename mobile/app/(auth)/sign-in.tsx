@@ -11,6 +11,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { COLORS } from "@/constants/colors";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -31,11 +32,17 @@ export default function Page() {
 
   const [error, setError] = useState("");
 
+  const [isSigningIn, setIsSigningIn] = useState(false);
+
+  const [isVerifying, setIsVerifying] = useState(false);
+
   // Handle the submission of the sign-in form
   const onSignInPress = useCallback(async () => {
     if (!isLoaded) return;
 
     setError("");
+
+    setIsSigningIn(true);
 
     // Start the sign-in process using the email and password provided
     try {
@@ -95,6 +102,9 @@ export default function Page() {
       console.error(JSON.stringify(err, null, 2));
       // Show user-friendly error message
       setError(getErrorMessage(err));
+    } finally {
+      // Turn OFF the loading state (this runs whether success or error)
+      setIsSigningIn(false);
     }
   }, [isLoaded, signIn, setActive, router, emailAddress, password]);
 
@@ -103,6 +113,8 @@ export default function Page() {
     if (!isLoaded) return;
 
     setError("");
+
+    setIsVerifying(true);
 
     try {
       const signInAttempt = await signIn.attemptSecondFactor({
@@ -132,6 +144,9 @@ export default function Page() {
       console.error(JSON.stringify(err, null, 2));
       // Show user-friendly error message
       setError(getErrorMessage(err));
+    } finally {
+      // Turn OFF the loading state
+      setIsVerifying(false);
     }
   }, [isLoaded, signIn, setActive, router, code]);
 
@@ -162,18 +177,23 @@ export default function Page() {
           placeholderTextColor="#9a8478"
           onChangeText={(code) => setCode(code)}
           keyboardType="numeric"
+          editable={!isVerifying}
         />
 
         <Pressable
           style={({ pressed }) => [
             styles.button,
-            !code && styles.buttonDisabled,
-            pressed && code && styles.buttonPressed,
+            (!code || isVerifying) && styles.buttonDisabled,
+            pressed && code && !isVerifying && styles.buttonPressed,
           ]}
           onPress={onVerifyPress}
-          disabled={!code}
+          disabled={!code || !isVerifying}
         >
-          <Text style={styles.buttonText}>Verify</Text>
+          {isVerifying ? (
+            <ActivityIndicator color={COLORS.white} size="small" />
+          ) : (
+            <Text style={styles.buttonText}>Verify</Text>
+          )}
         </Pressable>
       </View>
     );
@@ -212,6 +232,7 @@ export default function Page() {
           placeholderTextColor="#9a8478"
           onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
           keyboardType="email-address"
+          editable={!isSigningIn}
         />
 
         <TextInput
@@ -221,18 +242,28 @@ export default function Page() {
           placeholderTextColor="#9a8478"
           secureTextEntry={true}
           onChangeText={(password) => setPassword(password)}
+          editable={!isSigningIn}
         />
 
         <Pressable
           style={({ pressed }) => [
             styles.button,
-            (!emailAddress || !password) && styles.buttonDisabled,
-            pressed && emailAddress && password && styles.buttonPressed,
+            (!emailAddress || !password || isSigningIn) &&
+            styles.buttonDisabled, // 👈 Disable if loading
+            pressed &&
+            emailAddress &&
+            password &&
+            !isSigningIn &&
+            styles.buttonPressed,
           ]}
           onPress={onSignInPress}
-          disabled={!emailAddress || !password}
+          disabled={!emailAddress || !password || isSigningIn}
         >
-          <Text style={styles.buttonText}>Sign in</Text>
+          {isSigningIn ? (
+            <ActivityIndicator color={COLORS.white} size="small" />
+          ) : (
+            <Text style={styles.buttonText}>Sign in</Text>
+          )}
         </Pressable>
 
         <View style={styles.footerContainer}>
